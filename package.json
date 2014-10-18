@@ -6,16 +6,18 @@
   "bin": "bin/chrome-benchmarker.js",
   "scripts": {
     "test": "npm test",
-     "prepublish": "coffee -c -o lib src"
+    "prepublish": "coffee -c -o lib src"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "coffee-script": "^1.8.0",
     "browser-launcher": "^1.0.0",
     "chrome-remote-interface": "^0.5.0",
+    "coffee-script": "^1.8.0",
+    "commander": "^2.4.0",
     "finalhandler": "^0.3.1",
     "lodash": "^2.4.1",
+    "minimist": "^1.1.0",
     "serve-static": "^1.7.0"
   },
   "devDependencies": {
