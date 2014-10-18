@@ -2,6 +2,7 @@ assert = require('chai').assert
 benchmarker = require('../src/index')
 
 suite 'chrome-benchmarker', ->
+
   suite 'html()', ->
 
     test 'simple', (done) ->
@@ -56,21 +57,12 @@ suite 'chrome-benchmarker', ->
   suite 'results', ->
 
     #Memory usage is detected when a test is executed without setTimeout
-    test 'nothing-startup', (done) ->
-      benchmarker.js "#{__dirname}/files/nothing-startup.js", (err, result) ->
+    test 'nothing', (done) ->
+      benchmarker.js "#{__dirname}/files/nothing.js", (err, result) ->
         assert.notOk(err)
         assert.ok(result)
         assert(result.time < 50, 'Unexpected time: #{result.time}')
-        assert(result.memory < 1024*1024*10, 'Unexpected memory usage: #{result.memory}')
-        #console.log result
-        done()
-
-    test 'nothing-timeout', (done) ->
-      benchmarker.js "#{__dirname}/files/nothing-timeout.js", (err, result) ->
-        assert.notOk(err)
-        assert.ok(result)
-        assert(result.time < 50, 'Unexpected time: #{result.time}')
-        assert(result.memory < 1024*100, 'Unexpected memory usage: #{result.memory}')
+        assert(result.memory < 1024*200, 'Unexpected memory usage: #{result.memory}')
         #console.log result
         done()
 

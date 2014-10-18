@@ -1,10 +1,18 @@
 Chrome = require('chrome-remote-interface')
 _ = require('lodash')
 
-runTest = (url, port, done) ->
+
+runTest = (url, port, doneFun) ->
+  done = _.once(doneFun)
+
   benchmark = new Benchmark()
-  Chrome { port }, (chrome) ->  
-    
+
+  chooseTab = (tabs) ->
+    _(tabs).findIndex((t) -> t.url == url)
+
+  chromeConnection = Chrome({ port, chooseTab })
+  chromeConnection.on('error', done)
+  chromeConnection.on 'connect', (chrome) ->  
     chrome.Timeline.start({ includeCounters: true })
 
     chrome.on 'Timeline.started', () ->

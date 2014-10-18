@@ -14,8 +14,10 @@ benchmarkUrl = (url, opts, done) ->
   opts.debuggingPort ?= 9222
   launchChrome url, opts.debuggingPort, (err, browser) ->
     runTest url, opts.debuggingPort, (err, testResult) ->
-      browser.kill()
       done(err, testResult)
+      browser.kill()
+
+      
 
 benchmarkHtml = (htmlPath, opts, done) ->
   if _.isFunction(opts) && !done?
@@ -52,7 +54,7 @@ benchmarkWithServer = (server, opts, endpoint, done) ->
   server.listen opts.port, null, null, (err, success) ->
     if err then return done(err)
     benchmarkUrl url, opts, (err, testResult) ->
-      server.close()
+      try server.close()
       done(err, testResult)
 
 launchChrome = (url, debuggingPort, done) ->
