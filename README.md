@@ -138,3 +138,8 @@ https://developer.chrome.com/devtools/docs/protocol/1.1/index
 https://code.google.com/p/chromium/codesearch#chromium/src/third_party/WebKit/Source/devtools/protocol.json&q=protocol.json&sq=package:chromium&type=cs
 
 http://buildnewgames.com/garbage-collector-friendly-code/
+
+
+## Known issues ##
+
+Sometimes there is a `ECONNREFUSED` error
