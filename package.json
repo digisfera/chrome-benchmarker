@@ -1,6 +1,6 @@
 {
   "name": "chrome-benchmarker",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Benchmark execution time and memory usage using the Chrome Debugger Protocol",
   "main": "lib/index.js",
   "bin": "bin/chrome-benchmarker.js",
@@ -8,8 +8,8 @@
     "test": "npm test",
     "prepublish": "coffee -c -o lib src"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Manuel Cabral (m.cabral@digisfera.pt)",
+  "license": "MIT",
   "dependencies": {
     "browser-launcher": "^1.0.0",
     "chrome-remote-interface": "^0.5.0",
@@ -24,5 +24,9 @@
     "async": "^0.9.0",
     "chai": "^1.9.2",
     "mocha": "^1.21.5"
+  },
+ "repository": {
+    "type": "git",
+    "url": "https://github.com/digisfera/chrome-benchmarker"
   }
 }
