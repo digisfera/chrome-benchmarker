@@ -1,6 +1,6 @@
 {
   "name": "chrome-benchmarker",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Benchmark execution time and memory usage using the Chrome Debugger Protocol",
   "main": "lib/index.js",
   "bin": "bin/chrome-benchmarker.js",
