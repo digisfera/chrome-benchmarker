@@ -91,6 +91,16 @@ benchmarker.url('http://localhost:3000/benchmark.js', callback)
 - `result`: an object `{ memory, time }`.
 
 
+### jsStream(javascriptStream, [options], callback)
+
+Similar to `js()`, but receiving a stream instead of a file path
+
+
+### jsSrc(javascriptSourceCode, [options], callback)
+
+Similar to `js()`, but receiving source code instead of a file path
+
+
 ### html(mainHtmlFilePath, [options], callback)
 
 `mainHtmlFilePath` is a path to an HTML file with the code to be benchmarked. This file may load other files. The code it executes should call `console.timeStamp('startTest')` and `console.timeStamp('endTest')`.
@@ -127,6 +137,8 @@ benchmarker.url('http://localhost:3000/benchmark.js', callback)
 `chrome-benchmarker.js target --json --useFun <url|js|html> --debuggingPort <port> --port <port> --host <host> --basePath <path>`
 
 All arguments except `target` are optional.
+
+If `target` is `stdinJs`, the Javascript source for the test will be read from the standard input.
 
 
 ## References ##

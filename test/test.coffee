@@ -1,5 +1,6 @@
 assert = require('chai').assert
 benchmarker = require('../src/index')
+fs = require('fs')
 
 suite 'chrome-benchmarker', ->
 
@@ -50,6 +51,22 @@ suite 'chrome-benchmarker', ->
         debuggingPort: 9223
 
       benchmarker.js "#{__dirname}/files/basic.js", opts, (err, result) ->
+        assert.notOk(err)
+        assert.ok(result)
+        done()
+
+  suite 'jsStream', ->
+    test 'simple', (done) ->
+      stream = fs.createReadStream("#{__dirname}/files/basic.js")
+      benchmarker.jsStream stream, {}, (err, result) ->
+        assert.notOk(err)
+        assert.ok(result)
+        done()
+
+  suite 'jsSrc()', ->
+    test 'simple', (done) ->
+      src = fs.readFileSync("#{__dirname}/files/basic.js")
+      benchmarker.jsSrc src, {}, (err, result) ->
         assert.notOk(err)
         assert.ok(result)
         done()

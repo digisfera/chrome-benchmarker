@@ -12,6 +12,9 @@ run = ->
   if !target then return printUsage()
 
   benchmarkingFun = chooseFun(target)
+
+  if target == 'stdinJs' then target = process.stdin
+
   benchmarkingFun target, options, (err, success) ->
     if err then return console.error(err)
     if argv.json
@@ -23,6 +26,7 @@ run = ->
 chooseFun = (target) ->
   targetUrl = url.parse(target)
   if targetUrl.host then benchmarker.url
+  else if target == 'stdinJs' then benchmarker.jsStream
   else if path.extname(target) in [ '.js' ] then benchmarker.js
   else if path.extname(target) in [ '.html', '.htm' ] then benchmarker.html
   else throw "Unknown target type: #{target}"

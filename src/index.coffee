@@ -6,6 +6,7 @@ launcher = require('browser-launcher')
 path = require('path')
 fs = require('fs')
 _ = require('lodash')
+concatStream = require('concat-stream')
 
 runTest = require('./runTest')
 jsTestTemplate = require('./jsTestTemplate')
@@ -15,9 +16,7 @@ benchmarkUrl = (url, opts, done) ->
   launchChrome url, opts.debuggingPort, (err, browser) ->
     runTest url, opts.debuggingPort, (err, testResult) ->
       done(err, testResult)
-      browser.kill()
-
-      
+      browser.kill()      
 
 benchmarkHtml = (htmlPath, opts, done) ->
   if _.isFunction(opts) && !done?
@@ -36,14 +35,33 @@ benchmarkJs = (jsPath, opts, done) ->
   if _.isFunction(opts) && !done?
     done = opts
     opts = {}
+  try
+    benchmarkJsStream(fs.createReadStream(jsPath), opts, done)
+  catch e
+    done(e)
 
-  fs.readFile jsPath, (err, src) ->
-    if err then return done(err)
-    server = http.createServer (req, res) ->
-      res.writeHead(200, {"Content-Type": "text/html"})
-      res.end(jsTestTemplate(src))
+benchmarkJsStream = (stream, opts, done) ->
+  if _.isFunction(opts) && !done?
+    done = opts
+    opts = {}
 
-    benchmarkWithServer(server, opts, '', done)
+  write = concatStream (data) ->
+    benchmarkJsSrc(data, opts, done)
+
+  stream.on 'error', (err) -> done(err)
+  stream.pipe(write)
+
+benchmarkJsSrc = (src, opts, done) ->
+  if _.isFunction(opts) && !done?
+    done = opts
+    opts = {}
+
+  server = http.createServer (req, res) ->
+    res.writeHead(200, {"Content-Type": "text/html"})
+    res.end(jsTestTemplate(src))
+
+  benchmarkWithServer(server, opts, '', done)
+
 
 benchmarkWithServer = (server, opts, endpoint, done) ->
   opts.port ?= 8666
@@ -63,4 +81,4 @@ launchChrome = (url, debuggingPort, done) ->
     #console.dir(launch.browsers)
     launch(url, { browser: 'chrome', options: ["--remote-debugging-port=#{debuggingPort}"] }, done)
 
-module.exports = { url: benchmarkUrl, html: benchmarkHtml, js: benchmarkJs }
+module.exports = { url: benchmarkUrl, html: benchmarkHtml, js: benchmarkJs, jsSrc: benchmarkJsSrc, jsStream: benchmarkJsStream }
