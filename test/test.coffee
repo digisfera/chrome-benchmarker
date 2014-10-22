@@ -94,6 +94,14 @@ suite 'chrome-benchmarker', ->
         #console.log result
         done()
 
+    test.only 'nothing on timeout after garbage', (done) ->
+      benchmarker.js "#{__dirname}/files/nothing_timeout.js", (err, result) ->
+        assert.notOk(err)
+        assert.ok(result)
+        assert(0 < result.memory < 1024*200 , "Unexpected memory usage: #{result.memory}")
+        console.log result
+        done()
+
     test 'consistent results', (done) ->
       this.timeout(60000)
       runTest = (test, cb) -> benchmarker.js("#{__dirname}/files/#{test}.js", cb)
