@@ -82,7 +82,7 @@ suite 'chrome-benchmarker', ->
         assert.notOk(err)
         assert.ok(result)
         assert(result.time < 50, 'Unexpected time: #{result.time}')
-        assert(result.memory < 1024*200, 'Unexpected memory usage: #{result.memory}')
+        assert(0 <= result.memory < 1024*200, 'Unexpected memory usage: #{result.memory}')
         #console.log result
         done()
 
