@@ -1,8 +1,11 @@
 assert = require('chai').assert
 benchmarker = require('../src/index')
 fs = require('fs')
+async = require('async')
 
 suite 'chrome-benchmarker', ->
+
+  average = (arr) -> arr.reduce((accum, val) -> val+accum)/arr.length
 
   suite 'html()', ->
 
@@ -89,4 +92,18 @@ suite 'chrome-benchmarker', ->
         assert.ok(result)
         assert(1024*1024*5 < result.memory < 1024*1024*100 , 'Unexpected memory usage: #{result.memory}')
         #console.log result
+        done()
+
+    test 'consistent results', (done) ->
+      this.timeout(60000)
+      runTest = (test, cb) -> benchmarker.js("#{__dirname}/files/#{test}.js", cb)
+
+      async.mapSeries ['consistency', 'consistency_timeout', 'consistency_starttimeout'], runTest, (err, results) ->
+        if err then done(err)
+        memoryResults = (r.memory for r in results)
+        memoryResultAverage = average(memoryResults)
+        delta = memoryResultAverage * 0.01
+
+        for result in memoryResults
+          assert.closeTo(result, memoryResultAverage, delta, "Different memory results for same test: #{memoryResults}")
         done()
