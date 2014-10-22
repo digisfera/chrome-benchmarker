@@ -1,32 +1,40 @@
 Chrome = require('chrome-remote-interface')
 _ = require('lodash')
+async = require('async')
 
+maxConnectionTries = 5
 
 runTest = (url, port, doneFun) ->
   done = _.once(doneFun)
 
-  benchmark = new Benchmark()
-
   chooseTab = (tabs) ->
     _(tabs).findIndex((t) -> t.url == url)
 
-  chromeConnection = Chrome({ port, chooseTab })
-  chromeConnection.on('error', done)
-  chromeConnection.on 'connect', (chrome) ->  
-    chrome.Timeline.start({ includeCounters: true })
+  tryConnect = (connectCallback) ->
+    chromeConnection = Chrome({ port, chooseTab })
+    chromeConnection.on('error', (err) -> connectCallback(err))
+    chromeConnection.on('connect', (chrome) ->  connectCallback(null, chrome))
 
-    chrome.on 'Timeline.started', () ->
-      chrome.Page.navigate({ url })
+  async.retry maxConnectionTries, tryConnect, (err, chrome) ->
+    if err then done(err)
+    else startTest(chrome, url, done)
 
-    chrome.on 'Timeline.eventRecorded', (evt) ->
-      try
-        benchmark.processTimelineEvent(evt)
-      catch e
-        return done(e)
+startTest = (chrome, url, done) ->
+  benchmark = new Benchmark()
+  chrome.Timeline.start({ includeCounters: true })
 
-      if benchmark.completed
-        chrome.close()
-        done(null, benchmark.results())
+  chrome.on 'Timeline.started', () ->
+    chrome.Page.navigate({ url })
+
+  chrome.on 'Timeline.eventRecorded', (evt) ->
+    try
+      benchmark.processTimelineEvent(evt)
+    catch e
+      return done(e)
+
+    if benchmark.completed
+      chrome.close()
+      done(null, benchmark.results())
 
 class Benchmark
   constructor: () ->
