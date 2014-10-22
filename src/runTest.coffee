@@ -60,7 +60,6 @@ class Benchmark
       @started = true
       @testData.startTime = timestampData.start.time
       @testData.startHeapUsage = @currentHeapUsage()
-      #console.log "Let's go!", @testData.startTime, @testData.startHeapUsage
 
     @processMemoryEvents(countersEvents, gcEvents)
 
@@ -68,7 +67,6 @@ class Benchmark
       if !@started then throw 'Test ended before starting'
       @testData.endTime = timestampData.end.time
       @testData.endHeapUsage = @currentHeapUsage()
-      #console.log "We're done!", @testData.endTime
       @completed = true
 
     return true
@@ -89,7 +87,7 @@ class Benchmark
     #Uncounted events don't really seem to occur
     gcEventsToProcess = Array.prototype.concat(gc, @uncountedGarbageCollectorEvents)
 
-    groupedGcEvents = _.groupBy gcEventsToProcess, (evt) -> evt.endTime < @lastCountersEventTime
+    groupedGcEvents = _.groupBy gcEventsToProcess, (evt) => evt.endTime < @lastCountersEventTime
     counted = groupedGcEvents.true ? []
     uncounted = groupedGcEvents.false ? []
 
