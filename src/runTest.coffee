@@ -2,7 +2,8 @@ Chrome = require('chrome-remote-interface')
 _ = require('lodash')
 async = require('async')
 
-maxConnectionTries = 5
+maxConnectionTries = 10
+retryDelay = 100
 
 runTest = (url, port, doneFun) ->
   done = _.once(doneFun)
@@ -10,10 +11,16 @@ runTest = (url, port, doneFun) ->
   chooseTab = (tabs) ->
     _(tabs).findIndex((t) -> t.url == url)
 
-  tryConnect = (connectCallback) ->
+  delayOnError = (delay, done) ->
+    (err, args...) ->
+      timeout = if err? then delay else 0
+      _.delay ( -> done(err, args...) ), timeout
+
+  tryConnect = (done) ->
+    done = delayOnError(retryDelay, done)
     chromeConnection = Chrome({ port, chooseTab })
-    chromeConnection.on('error', (err) -> connectCallback(err))
-    chromeConnection.on('connect', (chrome) ->  connectCallback(null, chrome))
+    chromeConnection.on('error', (err) -> done(err))
+    chromeConnection.on('connect', (chrome) ->  done(null, chrome))
 
   async.retry maxConnectionTries, tryConnect, (err, chrome) ->
     if err then done(err)
